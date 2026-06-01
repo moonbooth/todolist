@@ -47,6 +47,12 @@
             --priority-high-bg: #fef2f2;
             --priority-high-text: #dc2626;
             --priority-high-border: #f43f5e;
+
+            /* Due date urgency accents */
+            --due-overdue-border: #ef4444;
+            --due-overdue-text: #dc2626;
+            --due-today-border: #f59e0b;
+            --due-today-text: #d97706;
             
             /* Elevation & Shadow Levels */
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -275,6 +281,30 @@
             color: var(--text-secondary);
         }
 
+        .due-date-select-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .due-date-select-wrapper label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .date-input-field {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 4px 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            background-color: #fff;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+        .date-input-field:focus {
+            border-color: var(--border-focus);
+        }
+
         .btn-add-submit {
             background-color: var(--primary);
             color: #fff;
@@ -483,6 +513,25 @@
         .task-card.priority-low { border-left: 4px solid var(--priority-low-border); }
         .task-card.priority-medium { border-left: 4px solid var(--priority-medium-border); }
         .task-card.priority-high { border-left: 4px solid var(--priority-high-border); }
+
+        .task-card.due-overdue { border-left-color: var(--due-overdue-border) !important; }
+        .task-card.due-today { border-left-color: var(--due-today-border) !important; }
+
+        .task-header-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .task-due-date {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .task-card.due-overdue .task-due-date { color: var(--due-overdue-text); }
+        .task-card.due-today .task-due-date { color: var(--due-today-text); }
 
         .task-header {
             display: flex;
@@ -1081,6 +1130,14 @@
                 border-top: 1px dashed var(--border-color); /* Premium decorative divider */
                 padding-top: 8px;
                 margin-top: 4px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .date-input-field {
+                font-size: 16px !important; /* Prevents auto-zooming scaling issues on iOS Safari */
+                min-width: 0;
+                flex: 1;
             }
 
             .add-todo-card.expanded .add-todo-desc-row {
@@ -1128,6 +1185,9 @@
                 .form-input, .form-textarea {
                     font-size: 16px !important; /* Prevents auto-zooming scaling issues on iOS Safari */
                 }
+                .date-input-field {
+                    font-size: 16px !important;
+                }
             }
 
             .app-footer {
@@ -1165,6 +1225,8 @@
                     <option value="date-asc">Oldest First</option>
                     <option value="priority-desc">Highest Priority</option>
                     <option value="title-asc">Title (A-Z)</option>
+                    <option value="due-date-asc">Due Date (Soonest)</option>
+                    <option value="due-date-desc">Due Date (Latest)</option>
                 </select>
 
                 <button id="clearCompletedBtn" class="btn-bulk-danger" title="Clear completed tasks">
@@ -1193,6 +1255,11 @@
                                 <option value="medium">Medium</option>
                                 <option value="high">High</option>
                             </select>
+                        </div>
+
+                        <div class="due-date-select-wrapper">
+                            <label for="todoDueDateInput">Due:</label>
+                            <input type="date" id="todoDueDateInput" class="date-input-field">
                         </div>
 
                         <button id="addTodoBtn" class="btn-add-submit">
@@ -1294,6 +1361,10 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label>Due Date</label>
+                    <p id="viewTaskDueDate" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;"></p>
+                </div>
+                <div class="form-group">
                     <label>Description</label>
                     <p id="viewTaskDescText" style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; word-break: break-word; background: #fafafa; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);"></p>
                 </div>
@@ -1338,6 +1409,10 @@
                         <option value="medium">Medium</option>
                         <option value="high">High</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="editDueDateInput">Due Date (Optional)</label>
+                    <input type="date" id="editDueDateInput" class="form-input">
                 </div>
                 <div class="form-group">
                     <div style="display: flex; justify-content: space-between;">
@@ -1570,6 +1645,55 @@
         }
 
         // ==========================================
+        // DUE DATE HELPERS (CALENDAR DATE SEMANTICS)
+        // ==========================================
+        function getLocalDateString(date) {
+            const d = date || new Date();
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function parseDueDate(str) {
+            if (!str || typeof str !== 'string') return null;
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(str)) return null;
+            const parts = str.split('-').map(Number);
+            const date = new Date(parts[0], parts[1] - 1, parts[2]);
+            if (date.getFullYear() !== parts[0] || date.getMonth() !== parts[1] - 1 || date.getDate() !== parts[2]) {
+                return null;
+            }
+            return str;
+        }
+
+        function getDueDateUrgency(task) {
+            if (!task.dueDate || task.column === 'done') return 'none';
+            const parsed = parseDueDate(task.dueDate);
+            if (!parsed) return 'none';
+            const today = getLocalDateString(new Date());
+            if (parsed < today) return 'overdue';
+            if (parsed === today) return 'today';
+            return 'future';
+        }
+
+        function formatDueDateLabel(dueDateStr) {
+            const parsed = parseDueDate(dueDateStr);
+            if (!parsed) return null;
+            const parts = parsed.split('-').map(Number);
+            const date = new Date(parts[0], parts[1] - 1, parts[2]);
+            const formatted = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            if (parts[0] !== new Date().getFullYear()) {
+                return `Due ${formatted}, ${parts[0]}`;
+            }
+            return `Due ${formatted}`;
+        }
+
+        function readDueDateFromInput(inputEl) {
+            if (!inputEl || !inputEl.value.trim()) return null;
+            return parseDueDate(inputEl.value.trim());
+        }
+
+        // ==========================================
         // PROMISE-BASED ACTIONS CONFIRMATION DIALOG (ASYNC MODAL)
         // ==========================================
         function requestConfirmation(title, message) {
@@ -1780,10 +1904,12 @@
             const titleInput = document.getElementById('todoTitleInput');
             const descInput = document.getElementById('todoDescInput');
             const priorityInput = document.getElementById('todoPriorityInput');
+            const dueDateInput = document.getElementById('todoDueDateInput');
             
             const title = titleInput.value.trim();
             const desc = descInput.value.trim();
             const priority = priorityInput.value;
+            const dueDate = readDueDateFromInput(dueDateInput);
 
             // Strict Schema Field Validation Guardrails
             if (title.length < 3) {
@@ -1798,6 +1924,10 @@
                 showToast('Description cannot exceed 150 characters!', 'error');
                 return;
             }
+            if (dueDateInput.value.trim() && !dueDate) {
+                showToast('Please enter a valid due date.', 'error');
+                return;
+            }
 
             // Create new standardized structural task entity
             const newTask = {
@@ -1808,7 +1938,8 @@
                 column: 'todo',
                 createdAt: Date.now(),
                 editedAt: null,
-                completed: false
+                completed: false,
+                dueDate: dueDate
             };
 
             state.tasks.push(newTask);
@@ -1818,6 +1949,7 @@
             titleInput.value = '';
             descInput.value = '';
             priorityInput.value = 'low';
+            dueDateInput.value = '';
             
             document.getElementById('titleCounter').textContent = '40 left';
             document.getElementById('descCounter').textContent = '150 left';
@@ -1926,6 +2058,18 @@
                     return priorityWeight[b.priority] - priorityWeight[a.priority];
                 } else if (state.sortBy === 'title-asc') {
                     return a.title.localeCompare(b.title);
+                } else if (state.sortBy === 'due-date-asc' || state.sortBy === 'due-date-desc') {
+                    const aDate = a.dueDate ? parseDueDate(a.dueDate) : null;
+                    const bDate = b.dueDate ? parseDueDate(b.dueDate) : null;
+                    if (!aDate && !bDate) return b.createdAt - a.createdAt;
+                    if (!aDate) return 1;
+                    if (!bDate) return -1;
+                    if (aDate !== bDate) {
+                        return state.sortBy === 'due-date-asc'
+                            ? aDate.localeCompare(bDate)
+                            : bDate.localeCompare(aDate);
+                    }
+                    return b.createdAt - a.createdAt;
                 }
                 return 0;
             });
@@ -1998,7 +2142,11 @@
         // ==========================================
         function createTaskCardDOM(task) {
             const card = document.createElement('article');
-            card.className = `task-card priority-${task.priority}`;
+            const urgency = getDueDateUrgency(task);
+            let cardClass = `task-card priority-${task.priority}`;
+            if (urgency === 'overdue') cardClass += ' due-overdue';
+            else if (urgency === 'today') cardClass += ' due-today';
+            card.className = cardClass;
             card.setAttribute('draggable', task.column !== 'done' ? 'true' : 'false');
             card.setAttribute('data-id', task.id);
 
@@ -2024,10 +2172,18 @@
             const isProgress = task.column === 'progress';
             const isTodo = task.column === 'todo';
 
+            const dueLabel = formatDueDateLabel(task.dueDate);
+            const dueDateHTML = dueLabel
+                ? `<span class="task-due-date">${dueLabel}</span>`
+                : '';
+
             const headerHTML = `
                 <div class="task-header">
                     <span class="badge-priority ${task.priority}" onclick="openBadgePriorityMenu(event, '${task.id}')">${task.priority}</span>
-                    <span class="task-time">${formatRelativeTime(task.createdAt)}</span>
+                    <div class="task-header-meta">
+                        ${dueDateHTML}
+                        <span class="task-time">${formatRelativeTime(task.createdAt)}</span>
+                    </div>
                 </div>
             `;
 
@@ -2098,6 +2254,7 @@
             badge.className = `badge-priority ${task.priority}`;
             
             document.getElementById('viewTaskDescText').textContent = task.desc || 'No description provided.';
+            document.getElementById('viewTaskDueDate').textContent = formatDueDateLabel(task.dueDate) || 'No due date';
             document.getElementById('viewTaskCreated').textContent = formatFullTime(task.createdAt);
             document.getElementById('viewTaskEdited').textContent = task.editedAt ? formatFullTime(task.editedAt) : 'Not edited yet';
 
@@ -2123,10 +2280,12 @@
             const titleInput = document.getElementById('editTitleInput');
             const descInput = document.getElementById('editDescInput');
             const priorityInput = document.getElementById('editPriorityInput');
+            const dueDateInput = document.getElementById('editDueDateInput');
 
             titleInput.value = task.title;
             descInput.value = task.desc || '';
             priorityInput.value = task.priority;
+            dueDateInput.value = task.dueDate || '';
 
             document.getElementById('editTitleCounter').textContent = `${40 - task.title.length} left`;
             document.getElementById('editDescCounter').textContent = `${150 - (task.desc ? task.desc.length : 0)} left`;
@@ -2143,10 +2302,12 @@
             const titleInput = document.getElementById('editTitleInput');
             const descInput = document.getElementById('editDescInput');
             const priorityInput = document.getElementById('editPriorityInput');
+            const dueDateInput = document.getElementById('editDueDateInput');
 
             const title = titleInput.value.trim();
             const desc = descInput.value.trim();
             const priority = priorityInput.value;
+            const dueDate = readDueDateFromInput(dueDateInput);
 
             if (title.length < 3) {
                 showToast('Task title must be at least 3 characters long!', 'error');
@@ -2160,10 +2321,15 @@
                 showToast('Description cannot exceed 150 characters!', 'error');
                 return;
             }
+            if (dueDateInput.value.trim() && !dueDate) {
+                showToast('Please enter a valid due date.', 'error');
+                return;
+            }
 
             task.title = title;
             task.desc = desc;
             task.priority = priority;
+            task.dueDate = dueDate;
             task.editedAt = Date.now(); // Log edit operation time for validation views
 
             saveToStorage();

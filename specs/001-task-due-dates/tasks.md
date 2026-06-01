@@ -24,7 +24,7 @@
 
 **Purpose**: Confirm environment and design context before editing code
 
-- [ ] T001 Verify branch `001-task-due-dates` and review `specs/001-task-due-dates/plan.md`, `spec.md`, and `data-model.md`
+- [x] T001 Verify branch `001-task-due-dates` and review `specs/001-task-due-dates/plan.md`, `spec.md`, and `data-model.md`
 
 ---
 
@@ -34,9 +34,9 @@
 
 **⚠️ CRITICAL**: No user story work until this phase is complete
 
-- [ ] T002 Add `--due-overdue-border`, `--due-overdue-text`, `--due-today-border`, and `--due-today-text` tokens to `:root` in `index.html`
-- [ ] T003 Add helper functions `getLocalDateString`, `parseDueDate`, `getDueDateUrgency`, and `formatDueDateLabel` after existing date helpers in `index.html`
-- [ ] T004 Extend `newTask` in `addNewTodo()` with `dueDate: null` (ISO `YYYY-MM-DD` when set) in `index.html`
+- [x] T002 Add `--due-overdue-border`, `--due-overdue-text`, `--due-today-border`, and `--due-today-text` tokens to `:root` in `index.html`
+- [x] T003 Add helper functions `getLocalDateString`, `parseDueDate`, `getDueDateUrgency`, and `formatDueDateLabel` after existing date helpers in `index.html`
+- [x] T004 Extend `newTask` in `addNewTodo()` with `dueDate: null` (ISO `YYYY-MM-DD` when set) in `index.html`
 
 **Checkpoint**: Helpers and schema ready—user story phases can begin
 
@@ -50,12 +50,12 @@
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] Add `#todoDueDateInput` (`<input type="date">`) with label in add-task `.row-right-group` after priority select in `index.html`
-- [ ] T006 [US1] Add `#editDueDateInput` due date field with label in edit modal after priority group in `index.html`
-- [ ] T007 [US1] Add read-only due date row `#viewTaskDueDate` in view modal body in `index.html`
-- [ ] T008 [US1] Wire `addNewTodo()` to read `#todoDueDateInput`, persist `dueDate` (or null), and reset input on success in `index.html`
-- [ ] T009 [US1] Wire `openEditModal()` and `saveEditedTask()` to populate, save, and clear `dueDate` in `index.html`
-- [ ] T010 [US1] Wire `openViewModal()` to show `formatDueDateLabel` output or "No due date" in `index.html`
+- [x] T005 [US1] Add `#todoDueDateInput` (`<input type="date">`) with label in add-task `.row-right-group` after priority select in `index.html`
+- [x] T006 [US1] Add `#editDueDateInput` due date field with label in edit modal after priority group in `index.html`
+- [x] T007 [US1] Add read-only due date row `#viewTaskDueDate` in view modal body in `index.html`
+- [x] T008 [US1] Wire `addNewTodo()` to read `#todoDueDateInput`, persist `dueDate` (or null), and reset input on success in `index.html`
+- [x] T009 [US1] Wire `openEditModal()` and `saveEditedTask()` to populate, save, and clear `dueDate` in `index.html`
+- [x] T010 [US1] Wire `openViewModal()` to show `formatDueDateLabel` output or "No due date" in `index.html`
 
 **Checkpoint**: User Story 1 complete—due dates can be set, edited, viewed, and persist
 
@@ -71,8 +71,8 @@
 
 ### Implementation for User Story 2
 
-- [ ] T011 [US2] Add CSS for `.task-due-date`, `.task-card.due-overdue`, and `.task-card.due-today` (border override + label colour) in `index.html`
-- [ ] T012 [US2] Update `createTaskCardDOM()` to render `Due …` label and apply `due-overdue` / `due-today` classes via `getDueDateUrgency()` when column is not `done` in `index.html`
+- [x] T011 [US2] Add CSS for `.task-due-date`, `.task-card.due-overdue`, and `.task-card.due-today` (border override + label colour) in `index.html`
+- [x] T012 [US2] Update `createTaskCardDOM()` to render `Due …` label and apply `due-overdue` / `due-today` classes via `getDueDateUrgency()` when column is not `done` in `index.html`
 
 **Checkpoint**: User Stories 1 and 2 both independently verifiable
 
@@ -86,8 +86,8 @@
 
 ### Implementation for User Story 3
 
-- [ ] T013 [US3] Add `<option value="due-date-asc">Due Date (Soonest)</option>` and `<option value="due-date-desc">Due Date (Latest)</option>` to `#sortBySelect` in `index.html`
-- [ ] T014 [US3] Add `due-date-asc` / `due-date-desc` branches in `render()` sort logic (undated last; tie-break `createdAt` desc) in `index.html`
+- [x] T013 [US3] Add `<option value="due-date-asc">Due Date (Soonest)</option>` and `<option value="due-date-desc">Due Date (Latest)</option>` to `#sortBySelect` in `index.html`
+- [x] T014 [US3] Add `due-date-asc` / `due-date-desc` branches in `render()` sort logic (undated last; tie-break `createdAt` desc) in `index.html`
 
 **Checkpoint**: All three user stories complete
 
@@ -97,9 +97,9 @@
 
 **Purpose**: Mobile UX, backward compatibility, and manual QA
 
-- [ ] T015 Add mobile styles for date inputs (`font-size: 16px`, layout in `.row-right-group`) in `@media (max-width: 768px)` in `index.html`
-- [ ] T016 Run manual tests T1–T9 from `specs/001-task-due-dates/quickstart.md` in desktop and 375px viewport
-- [ ] T017 Verify demo/legacy tasks without `dueDate` load and render without errors in `index.html`
+- [x] T015 Add mobile styles for date inputs (`font-size: 16px`, layout in `.row-right-group`) in `@media (max-width: 768px)` in `index.html`
+- [x] T016 Run manual tests T1–T9 from `specs/001-task-due-dates/quickstart.md` in desktop and 375px viewport
+- [x] T017 Verify demo/legacy tasks without `dueDate` load and render without errors in `index.html`
 
 ---
 
