@@ -32,5 +32,6 @@
 ## Notes
 
 - Validation passed on first iteration (2026-06-01).
+- Clarification session 2026-06-01 resolved 5 UX decisions (overdue styling, date format, add-form placement, due-today accent, card label prefix).
 - Scope explicitly excludes overdue filters, reminders, and time-of-day deadlines.
 - Ready for `/speckit-plan`.
