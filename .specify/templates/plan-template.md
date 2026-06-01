@@ -18,29 +18,39 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]
+**Language/Version**: Vanilla HTML5, CSS3, ES6+ JavaScript (no transpilation)
 
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
+**Primary Dependencies**: CDN only — Google Fonts (Plus Jakarta Sans), Font Awesome 6.x
 
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
+**Storage**: Browser `localStorage` (key: `todolist`); no backend
 
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]
+**Testing**: Manual browser verification (desktop + mobile viewport); automated tests only if spec requests them
 
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
+**Target Platform**: Modern browsers (Chrome, Firefox, Safari, Edge; iOS Safari, Android Chrome)
 
-**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]
+**Project Type**: Single-page web app (`index.html` at repository root)
 
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]
+**Performance Goals**: Smooth interaction for typical personal task lists (<500 tasks); full `render()` acceptable
 
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]
+**Constraints**: No build tools, no frameworks, offline-capable, mobile-first responsive layout
 
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Scale/Scope**: Single-user, client-only; changes confined primarily to `index.html`
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+Verify each gate before Phase 0 research; re-check after Phase 1 design.
+
+| Gate | Requirement | Pass Criteria |
+|------|-------------|---------------|
+| G1 — Vanilla stack | Principle I | No new frameworks, bundlers, npm deps, or build steps proposed |
+| G2 — Single-page mobile UI | Principle II | Feature works on ≤768px and desktop; no body-level scroll regression |
+| G3 — localStorage persistence | Principle III | Data changes use `todolist` key; no backend/sync unless amended |
+| G4 — Minimal diff | Principle IV | Smallest change set; matches existing CSS tokens, toasts, modals, `render()` |
+| G5 — Kanban rules | Principle V | Task moves respect To Do → In Progress → Done workflow constraints |
+
+If any gate fails, document justification in **Complexity Tracking** below or revise the plan.
 
 ## Project Structure
 
@@ -65,43 +75,15 @@ specs/[###-feature]/
 -->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+# todolist default (single-file SPA)
+index.html                 # All CSS, HTML, and JavaScript
+README.md
+LICENSE
+specs/[###-feature]/       # Feature specs, plans, tasks (Spec Kit)
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Default delivery is changes to `index.html` unless a
+feature plan documents a constitution amendment to split files or add tooling.
 
 ## Complexity Tracking
 

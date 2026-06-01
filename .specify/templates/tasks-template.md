@@ -21,10 +21,12 @@ description: "Task list template for feature implementation"
 
 ## Path Conventions
 
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+- **todolist (default)**: All application code in `index.html` at repository root
+  (CSS in `<style>`, markup in `<body>`, logic in `<script>`). Feature specs and
+  plans live under `specs/[###-feature-name]/`.
+- **Other layouts** (only if constitution amended): `src/`, `backend/src/`,
+  `frontend/src/` — adjust paths in generated tasks accordingly.
+- Paths shown below use `index.html` unless plan.md specifies otherwise.
 
 <!--
   ============================================================================
